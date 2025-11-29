@@ -13,7 +13,7 @@ export default function App() {
   const { user } = useAuth();
 
   return (
-    <BrowserRouter>
+    
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -30,7 +30,7 @@ export default function App() {
           <Route path="notifications" element={<Notifications />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+   
   );
 }
 

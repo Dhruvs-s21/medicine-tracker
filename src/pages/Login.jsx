@@ -1,5 +1,5 @@
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 
 export default function Login() {
@@ -12,7 +12,7 @@ export default function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Temporary fake login (backend not linked yet)
+    // Temporary fake login
     const dummyUser = {
       name: "Dhruv",
       email: email,
@@ -50,7 +50,16 @@ export default function Login() {
           Login
         </button>
       </form>
+
+      
+      <p className="mt-4 text-center">
+        New user?{" "}
+        <Link to="/register" className="text-blue-600 ">
+          Create an account
+        </Link>
+      </p>
     </div>
   );
 }
+
 

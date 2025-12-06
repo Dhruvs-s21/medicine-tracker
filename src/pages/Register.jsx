@@ -1,61 +1,99 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
-  const [form, setForm] = useState({
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
     name: "",
+    phone: "",
     email: "",
-    password: "",
+    password: ""
   });
 
-  const change = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
-  const submit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Register", form);
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/register",
+        formData,
+        {
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+
+      console.log(res.data);
+
+      alert("Registration successful!");
+
+      // Save token & user
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      navigate("/"); // redirect to home/dashboard
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.msg || "Registration failed");
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form
-        onSubmit={submit}
-        className="bg-white shadow-lg rounded-lg p-6 w-96"
-      >
-        <h2 className="text-xl font-bold mb-4 text-center">Register</h2>
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-3 w-[300px] mx-auto mt-10"
+    >
+      <input
+        type="text"
+        name="name"
+        placeholder="Full Name"
+        value={formData.name}
+        onChange={handleChange}
+        className="border p-2 rounded"
+        required
+      />
 
-        <input
-          name="name"
-          className="form-input mb-3"
-          placeholder="Name"
-          onChange={change}
-        />
+      <input
+        type="text"
+        name="phone"
+        placeholder="Phone Number"
+        value={formData.phone}
+        onChange={handleChange}
+        className="border p-2 rounded"
+        required
+      />
 
-        <input
-          name="email"
-          className="form-input mb-3"
-          placeholder="Email"
-          onChange={change}
-        />
+      <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        value={formData.email}
+        onChange={handleChange}
+        className="border p-2 rounded"
+        required
+      />
 
-        <input
-          type="password"
-          name="password"
-          className="form-input mb-3"
-          placeholder="Password"
-          onChange={change}
-        />
+      <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        value={formData.password}
+        onChange={handleChange}
+        className="border p-2 rounded"
+        required
+      />
 
-        <button className="w-full bg-indigo-600 text-white py-2 rounded-md">
-          Register
-        </button>
-
-        <p className="mt-4 text-sm text-center">
-          Already have an account?{" "}
-          <Link className="text-indigo-600" to="/login">
-            Login
-          </Link>
-        </p>
-      </form>
-    </div>
+      <button className="bg-blue-600 text-white p-2 rounded">
+        Register
+      </button>
+    </form>
   );
 }

@@ -1,6 +1,7 @@
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
+import axios from "axios";
 
 export default function Login() {
   const { login } = useAuth();
@@ -9,19 +10,28 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Temporary fake login
-    const dummyUser = {
-      name: "Dhruv",
-      email: email,
-    };
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        { email, password },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
-    const fakeToken = "123456789";
+      // Save user + token using context
+      login(res.data.user, res.data.token);
 
-    login(dummyUser, fakeToken);
-    navigate("/");
+      alert("Login successful!");
+      navigate("/");
+
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.msg || "Login failed");
+    }
   };
 
   return (
@@ -34,6 +44,7 @@ export default function Login() {
           className="w-full p-2 border rounded"
           placeholder="Email"
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
 
         <input
@@ -41,6 +52,7 @@ export default function Login() {
           className="w-full p-2 border rounded"
           placeholder="Password"
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
 
         <button
@@ -51,15 +63,13 @@ export default function Login() {
         </button>
       </form>
 
-      
       <p className="mt-4 text-center">
         New user?{" "}
-        <Link to="/register" className="text-blue-600 ">
+        <Link to="/register" className="text-blue-600">
           Create an account
         </Link>
       </p>
     </div>
   );
 }
-
 

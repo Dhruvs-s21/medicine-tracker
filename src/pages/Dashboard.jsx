@@ -1,25 +1,64 @@
-import Card from "../components/Card";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Dashboard() {
+  const [data, setData] = useState({
+    myMedicines: 0,
+    availableMedicines: 0,
+    outgoingRequests: 0,
+    incomingRequests: 0,
+  });
+
+  const loadData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await axios.get(
+        "http://localhost:5000/api/dashboard",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setData(res.data);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to load dashboard data");
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
   return (
-    <div>
+    <div className="p-6">
       <h2 className="text-2xl font-bold mb-6">Dashboard</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card title="Total Medicines" value="12" />
-        <Card title="Expiring Soon" value="3" />
-        <Card title="Donations Made" value="5" />
-      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
-      <div className="mt-10">
-        <h3 className="text-xl font-semibold mb-3">Recent Expiring Medicines</h3>
-
-        <div className="bg-white shadow rounded-lg p-4">
-          <ul className="divide-y">
-            <li className="py-2">Paracetamol - Expiry: 2025-01-05</li>
-            <li className="py-2">Cough Syrup - Expiry: 2025-01-08</li>
-          </ul>
+        {/* Card #1 */}
+        <div className="bg-white shadow p-6 rounded">
+          <h3 className="text-lg font-semibold">My Medicines</h3>
+          <p className="text-3xl font-bold mt-2">{data.myMedicines}</p>
         </div>
+
+        {/* Card #2 */}
+        <div className="bg-white shadow p-6 rounded">
+          <h3 className="text-lg font-semibold">Available for Donation</h3>
+          <p className="text-3xl font-bold mt-2">{data.availableMedicines}</p>
+        </div>
+
+        {/* Card #3 */}
+        <div className="bg-white shadow p-6 rounded">
+          <h3 className="text-lg font-semibold">Requests I Made</h3>
+          <p className="text-3xl font-bold mt-2">{data.outgoingRequests}</p>
+        </div>
+
+        {/* Card #4 */}
+        <div className="bg-white shadow p-6 rounded">
+          <h3 className="text-lg font-semibold">Requests Received</h3>
+          <p className="text-3xl font-bold mt-2">{data.incomingRequests}</p>
+        </div>
+
       </div>
     </div>
   );
